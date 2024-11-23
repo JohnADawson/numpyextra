@@ -51,12 +51,11 @@ def pad_indices(shape, indices):
 def get(a, indices):
     """With indices index a's innermost dimensions, broadcasting over the others.
 
-    - ``lambda a: get(a, ())`` is a generalized universal function
-      (gufunc) with signature ``()->()``;
-    - ``lambda a, z: get(a, (z,))`` is a gufunc with signature
-      ``(m),()->()``;
-    - ``lambda a, y, z: get(a, (y, z))`` is a gufunc with signature
-      ``(l,m),(),()->()``;
+    - lambda a: get(a, ()) is a generalized universal function (gufunc)
+      with signature ()->();
+    - lambda a, z: get(a, (z,)) is a gufunc with signature (m),()->();
+    - lambda a, y, z: get(a, (y, z)) is a gufunc with signature
+      (l,m),(),()->();
 
     and so on.
 
