@@ -6,6 +6,8 @@ pad_indices
     Pad indices with arrays for the outermost dimensions of a shape.
 get
     Index an array's innermost dimensions, broadcasting over the others.
+concatenate
+    Concatenate arrays along the innermost dimension, broadcasting over the others.
 """
 
 import numpy as np
@@ -106,3 +108,34 @@ def get(a, indices):
     """
     a = np.asanyarray(a)
     return a[pad_indices(a.shape, indices)]
+
+
+def concatenate(arrays, out=None, *, casting="same_kind", dtype=None):
+    """Concatenate arrays along the innermost dimension, broadcasting over the others.
+
+    - lambda a: concatenate([a]) is a generalized universal function
+      (gufunc) with signature (n)->(n);
+    - lambda a, b: concatenate([a, b]) is a gufunc with signature
+      (n),(o)->(n+o);
+    - lambda a, b, c: concatenate([a, b, c]) is a gufunc with signature
+      (n),(o),(p)->(n+o+p);
+
+    and so on.
+
+    >>> import numpy as np
+    >>> import numpyextra as npx
+    >>> a = np.r_[:2]
+    >>> a
+    array([0, 1])
+    >>> b = np.c_[2:4]
+    >>> b
+    array([[2],
+           [3]])
+    >>> npx.concatenate([a, b])
+    array([[0, 1, 2],
+           [0, 1, 3]])
+    """
+    arrays = list(map(np.asanyarray, arrays))
+    loop = np.broadcast_shapes(*(a.shape[:-1] for a in arrays))
+    broadcasts = [np.broadcast_to(a, loop + a.shape[-1:]) for a in arrays]
+    return np.concatenate(broadcasts, axis=-1, out=out, casting=casting, dtype=dtype)
